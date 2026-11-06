@@ -34,6 +34,8 @@ or Khan Academy) — not just the site home page.
 - Combo/crit damage, screen shake, canvas particles, synthesised Web Audio (no audio files).
 - **Bilingual UI** (Thai default, English toggle). Question content stays Thai, except the English set.
 - **Bottom tabs** (เล่น / สถิติ / ตั้งค่า), subject carousel, one-tap 🏠 in battle.
+- **Export the results page** as a Markdown review sheet (all questions, answers, explanations and
+  study references) or copy it to the clipboard.
 - Local stats, per-subject mastery, best scores, day streak.
 
 ## Controls

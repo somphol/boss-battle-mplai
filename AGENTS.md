@@ -74,6 +74,10 @@ diff. Adding questions: append a line before `];` and run the validator.
   `TOPICS` has `label` (TH/EN), `chapter`, `grade` (4/5/6 or 0 = all), and `q` (search query).
   `refFor()` builds a **topic-specific search URL** on Project 14 (science/math), OBEC (Thai/social)
   or Khan Academy (English). Do not replace these with the portal home page.
+- **Export:** `buildReviewDoc()` turns the finished run into Markdown (missed first, then correct,
+  each with answer, explanation, reference and source URL). `downloadText()` saves it; the copy
+  button tries `navigator.clipboard` then falls back to a hidden textarea. Keep the doc in the UI
+  language (`LANG`).
 - **Grade filter is soft**: it applies only when a subject has at least 8 questions in that grade;
   otherwise `buildSet()` falls back to the full pool so a battle can still fill 14 questions.
 - **Reference links are not deep links** to a single lesson, but they are topic-specific searches.
