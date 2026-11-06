@@ -51,7 +51,8 @@ Control points:
 | `S` | Battle state; `startBattle()` resets it |
 | `M.th` / `M.en` + `t()` | UI copy; static nodes use `data-i18n` / `data-i18n-aria` |
 | `renderMenu` / `paintDossier` / `renderStats` / `paintEnd` | Re-rendered on language change |
-| `TOPICS` / `TOPIC_RULES` / `topicFor()` / `refFor()` | Study reference: chapter + source link per question |
+| `TOPICS` / `TOPIC_RULES` / `topicFor()` / `refFor()` / `gradeOf()` | Study reference (topic, chapter, grade) and topic-specific search link |
+| `GRADE` / `buildSet()` | Grade filter (0 = all, 4/5/6); falls back to the full pool if < 8 matches |
 | `setView` / `goHome` / `goStats` / `openSheet` | Navigation |
 
 Question schema:
@@ -69,11 +70,14 @@ diff. Adding questions: append a line before `];` and run the validator.
 ## 4. Decisions and constraints
 
 - **Every question carries a study reference.** `TOPIC_RULES` classifies a question by keywords in
-  `q.q + q.w` **only** — never the options, because distractors cause false matches. `TOPICS` maps
-  each subject/topic to a Thai chapter label and a portal URL. If you add a question, add its
-  keywords to the right rule; otherwise it falls back to the subject's `general` reference.
-- **Reference links are portal-level** (Project 14 · สสวท, OBEC, Khan Academy), not deep links to a
-  single lesson. Chapter names follow the standard textbook sequence. Do not invent deep URLs.
+  `q.q + q.w` **only** — never the options, because distractors cause false matches. Each entry in
+  `TOPICS` has `label` (TH/EN), `chapter`, `grade` (4/5/6 or 0 = all), and `q` (search query).
+  `refFor()` builds a **topic-specific search URL** on Project 14 (science/math), OBEC (Thai/social)
+  or Khan Academy (English). Do not replace these with the portal home page.
+- **Grade filter is soft**: it applies only when a subject has at least 8 questions in that grade;
+  otherwise `buildSet()` falls back to the full pool so a battle can still fill 14 questions.
+- **Reference links are not deep links** to a single lesson, but they are topic-specific searches.
+  Chapter names follow the standard textbook sequence; do not invent lesson URLs.
 - **Zero external requests** — no fonts, CDN, images or audio files. Links open only when tapped.
 - **Thai is the default UI language**, persisted at `bbTPAT3_v1.lang` (same key as the sibling repo).
 - **Question content is Thai** except the English subject. The English UI does not translate content.

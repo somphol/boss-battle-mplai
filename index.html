@@ -572,6 +572,12 @@ body.tabbarOn{padding-bottom:100px}
   color:var(--dim);font:700 11px/1 var(--body);padding:9px 4px;transition:.15s;
 }
 .tiers button.on{border-color:var(--cya);color:#07040f;background:var(--cya);box-shadow:0 0 12px rgba(25,246,255,.4)}
+.grades{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;width:100%;margin:0 0 4px}
+.grades button{
+  cursor:pointer;border-radius:9px;border:1px solid #4a3a85;background:rgba(255,255,255,.03);
+  color:var(--dim);font:700 11px/1 var(--body);padding:9px 4px;transition:.15s;
+}
+.grades button.on{border-color:var(--lime);color:#07040f;background:var(--lime);box-shadow:0 0 12px rgba(198,255,61,.4)}
 .bossPick{justify-self:center}
 .ovTitle{justify-self:center}
 .ovKicker{justify-self:center}
@@ -625,7 +631,7 @@ body.tabbarOn{padding-bottom:100px}
 
     <div class="secHead">
       <h2 data-i18n="chooseSubject">เลือกวิชา</h2>
-      <span id="bankMeta">500 ข้อ · 5 บอส</span>
+      <span id="bankMeta">700 ข้อ · 7 บอส</span>
     </div>
     <div class="carousel" id="grid"></div>
     <p class="swipeHint" data-i18n="swipe">ปัดเพื่อเลือกวิชา · แตะเพื่อดูบอส</p>
@@ -742,6 +748,12 @@ body.tabbarOn{padding-bottom:100px}
       <button type="button" data-tier="mix" class="on" data-i18n="tierMix">ผสม</button>
       <button type="button" data-tier="core" data-i18n="tierCore">พื้นฐาน</button>
       <button type="button" data-tier="hard" data-i18n="tierHard">เข้มข้น</button>
+    </div>
+    <div class="grades" id="grades">
+      <button type="button" data-grade="0" class="on" data-i18n="gradeAll">ทั้งหมด</button>
+      <button type="button" data-grade="4" data-i18n="grade4">ม.4</button>
+      <button type="button" data-grade="5" data-i18n="grade5">ม.5</button>
+      <button type="button" data-grade="6" data-i18n="grade6">ม.6</button>
     </div>
     <button class="bigBtn" id="ovBtn" type="button" data-i18n="startBattle">เริ่มการต่อสู้</button>
     <button class="bigBtn ghost" id="ovCancel" type="button" data-i18n="cancel">ยกเลิก</button>
@@ -891,7 +903,7 @@ const M = {
     resetData:'ล้างข้อมูล',
     closeAria:'ปิด',
     refLabel:'📖 ทบทวนต่อ',
-    refOpen:'เปิดบทเรียน ↗',
+    refOpen:'ค้นหาแหล่งเรียน ↗',
     navAria:'นำทางหลัก',
     homeAria:'กลับหน้าแรก',
     version:(n)=>'BOSS BATTLE · v2 · ' + n + ' ข้อ',
@@ -901,6 +913,10 @@ const M = {
     tierMix:'ผสม',
     tierCore:'พื้นฐาน',
     tierHard:'เข้มข้น',
+    gradeAll:'ทั้งหมด',
+    grade4:'ม.4',
+    grade5:'ม.5',
+    grade6:'ม.6',
     rushSub:'รวมทุกวิชา · 20 ข้อ · ดาเมจคูณพิเศษ',
     rushAria:'โหมดบอสรวมทุกวิชา',
     statsBtn:'📊 สถิติ',
@@ -991,7 +1007,7 @@ const M = {
     resetData:'Reset data',
     closeAria:'Close',
     refLabel:'📖 Study next',
-    refOpen:'Open source ↗',
+    refOpen:'Find lessons ↗',
     navAria:'Main navigation',
     homeAria:'Back to home',
     version:(n)=>'BOSS BATTLE · v2 · ' + n + ' questions',
@@ -1001,6 +1017,10 @@ const M = {
     tierMix:'Mixed',
     tierCore:'Core',
     tierHard:'Hard',
+    gradeAll:'All',
+    grade4:'M.4',
+    grade5:'M.5',
+    grade6:'M.6',
     rushSub:'All subjects · 20 questions',
     rushAria:'Boss rush mode across every subject',
     statsBtn:'📊 Stats',
@@ -1103,75 +1123,88 @@ const SRC_SCI = 'https://proj14.ipst.ac.th/';
 const SRC_SOC = 'https://www.obec.go.th/';
 const SRC_ENG = 'https://th.khanacademy.org/';
 
+const SEARCH_BASE = {
+  science: 'https://proj14.ipst.ac.th/?s=',
+  social: 'https://www.obec.go.th/?s=',
+  english: 'https://th.khanacademy.org/search?page_search_query='
+};
+
 const TOPICS = {
   physics: {
-    momentum: { label:{th:'โมเมนตัมและการชน',en:'Momentum and collisions'}, chapter:'สสวท. ฟิสิกส์ ม.4 · โมเมนตัมและการชน', url:SRC_SCI },
-    circular: { label:{th:'การเคลื่อนที่แบบวงกลมและโพรเจกไทล์',en:'Circular motion and projectiles'}, chapter:'สสวท. ฟิสิกส์ ม.4 · การเคลื่อนที่แบบวงกลม', url:SRC_SCI },
-    fluids:   { label:{th:'ของไหล',en:'Fluids'}, chapter:'สสวท. ฟิสิกส์ ม.5 · ของไหล', url:SRC_SCI },
-    heat:     { label:{th:'ความร้อนและแก๊ส',en:'Heat and gases'}, chapter:'สสวท. ฟิสิกส์ ม.5 · ความร้อนและแก๊ส', url:SRC_SCI },
-    waves:    { label:{th:'คลื่น เสียง และแสง',en:'Waves, sound and light'}, chapter:'สสวท. ฟิสิกส์ ม.5 · คลื่น เสียง และแสง', url:SRC_SCI },
-    elec:     { label:{th:'ไฟฟ้าและแม่เหล็ก',en:'Electricity and magnetism'}, chapter:'สสวท. ฟิสิกส์ ม.5–6 · ไฟฟ้าและแม่เหล็ก', url:SRC_SCI },
-    modern:   { label:{th:'ฟิสิกส์แผนใหม่',en:'Modern physics'}, chapter:'สสวท. ฟิสิกส์ ม.6 · ฟิสิกส์แผนใหม่', url:SRC_SCI },
-    mech:     { label:{th:'การเคลื่อนที่และกฎนิวตัน',en:'Motion and Newton’s laws'}, chapter:'สสวท. ฟิสิกส์ ม.4 · การเคลื่อนที่และกฎนิวตัน', url:SRC_SCI },
-    general:  { label:{th:'พื้นฐานฟิสิกส์',en:'Physics basics'}, chapter:'สสวท. ฟิสิกส์ ม.4–6 · ความรู้พื้นฐาน', url:SRC_SCI }
+    kinematics:  { label:{th:'การเคลื่อนที่แนวตรง',en:'Kinematics'}, chapter:'สสวท. ฟิสิกส์ ม.4', grade:4, q:'การเคลื่อนที่แนวตรง ความเร็ว ความเร่ง' },
+    dynamics:    { label:{th:'แรงและกฎนิวตัน',en:'Forces and Newton’s laws'}, chapter:'สสวท. ฟิสิกส์ ม.4', grade:4, q:'แรง กฎของนิวตัน ความเสียดทาน' },
+    energy:      { label:{th:'งาน พลังงาน และกำลัง',en:'Work, energy and power'}, chapter:'สสวท. ฟิสิกส์ ม.4', grade:4, q:'งาน พลังงาน กำลัง' },
+    momentum:    { label:{th:'โมเมนตัมและการชน',en:'Momentum and collisions'}, chapter:'สสวท. ฟิสิกส์ ม.4', grade:4, q:'โมเมนตัม การชน' },
+    circular:    { label:{th:'การเคลื่อนที่แบบวงกลมและโพรเจกไทล์',en:'Circular motion and projectiles'}, chapter:'สสวท. ฟิสิกส์ ม.4', grade:4, q:'การเคลื่อนที่แบบวงกลม โพรเจกไทล์' },
+    fluids:      { label:{th:'ของไหล',en:'Fluids'}, chapter:'สสวท. ฟิสิกส์ ม.5', grade:5, q:'ของไหล ความดัน แรงลอยตัว' },
+    heat:        { label:{th:'ความร้อนและแก๊ส',en:'Heat and gases'}, chapter:'สสวท. ฟิสิกส์ ม.5', grade:5, q:'ความร้อน แก๊ส' },
+    waves:       { label:{th:'คลื่นกล',en:'Mechanical waves'}, chapter:'สสวท. ฟิสิกส์ ม.5', grade:5, q:'คลื่นกล' },
+    sound:       { label:{th:'เสียง',en:'Sound'}, chapter:'สสวท. ฟิสิกส์ ม.5', grade:5, q:'เสียง คลื่นเสียง' },
+    light:       { label:{th:'แสง เลนส์ และกระจก',en:'Light, lenses and mirrors'}, chapter:'สสวท. ฟิสิกส์ ม.5', grade:5, q:'แสง เลนส์ กระจก' },
+    electricity: { label:{th:'ไฟฟ้าและวงจร',en:'Electricity and circuits'}, chapter:'สสวท. ฟิสิกส์ ม.5', grade:5, q:'ไฟฟ้า วงจรไฟฟ้า' },
+    magnetism:   { label:{th:'แม่เหล็กและหม้อแปลง',en:'Magnetism and transformers'}, chapter:'สสวท. ฟิสิกส์ ม.6', grade:6, q:'แม่เหล็ก หม้อแปลงไฟฟ้า' },
+    modern:      { label:{th:'ฟิสิกส์แผนใหม่',en:'Modern physics'}, chapter:'สสวท. ฟิสิกส์ ม.6', grade:6, q:'ฟิสิกส์แผนใหม่ นิวเคลียร์' },
+    general:     { label:{th:'พื้นฐานฟิสิกส์',en:'Physics basics'}, chapter:'สสวท. ฟิสิกส์ ม.4', grade:4, q:'ฟิสิกส์พื้นฐาน' }
   },
   chemistry: {
-    acid:       { label:{th:'กรด–เบส',en:'Acids and bases'}, chapter:'สสวท. เคมี ม.5 · กรด–เบส', url:SRC_SCI },
-    electro:    { label:{th:'ไฟฟ้าเคมี',en:'Electrochemistry'}, chapter:'สสวท. เคมี ม.6 · ไฟฟ้าเคมี', url:SRC_SCI },
-    organic:    { label:{th:'เคมีอินทรีย์',en:'Organic chemistry'}, chapter:'สสวท. เคมี ม.6 · เคมีอินทรีย์', url:SRC_SCI },
-    gas:        { label:{th:'แก๊สและสมบัติของแก๊ส',en:'Gases'}, chapter:'สสวท. เคมี ม.5 · แก๊สและสมบัติของแก๊ส', url:SRC_SCI },
-    thermo:     { label:{th:'เทอร์โมเคมี',en:'Thermochemistry'}, chapter:'สสวท. เคมี ม.5 · เทอร์โมเคมี', url:SRC_SCI },
-    equilibrium:{ label:{th:'อัตราปฏิกิริยาและสมดุล',en:'Rates and equilibrium'}, chapter:'สสวท. เคมี ม.5 · อัตราการเกิดปฏิกิริยาและสมดุล', url:SRC_SCI },
-    bonding:    { label:{th:'พันธะเคมี',en:'Chemical bonding'}, chapter:'สสวท. เคมี ม.4 · พันธะเคมี', url:SRC_SCI },
-    atomic:     { label:{th:'โครงสร้างอะตอมและตารางธาตุ',en:'Atomic structure and periodic table'}, chapter:'สสวท. เคมี ม.4 · โครงสร้างอะตอมและตารางธาตุ', url:SRC_SCI },
-    mole:       { label:{th:'ปริมาณสารสัมพันธ์',en:'Stoichiometry'}, chapter:'สสวท. เคมี ม.4–5 · ปริมาณสารสัมพันธ์', url:SRC_SCI },
-    solution:   { label:{th:'สารละลาย',en:'Solutions'}, chapter:'สสวท. เคมี ม.5 · สารละลาย', url:SRC_SCI },
-    general:    { label:{th:'พื้นฐานเคมี',en:'Chemistry basics'}, chapter:'สสวท. เคมี ม.4–6 · ความรู้พื้นฐาน', url:SRC_SCI }
+    atomic:      { label:{th:'โครงสร้างอะตอม',en:'Atomic structure'}, chapter:'สสวท. เคมี ม.4', grade:4, q:'โครงสร้างอะตอม' },
+    periodic:    { label:{th:'ตารางธาตุและแนวโน้ม',en:'Periodic table and trends'}, chapter:'สสวท. เคมี ม.4', grade:4, q:'ตารางธาตุ' },
+    bonding:     { label:{th:'พันธะเคมี',en:'Chemical bonding'}, chapter:'สสวท. เคมี ม.4', grade:4, q:'พันธะเคมี' },
+    mole:        { label:{th:'ปริมาณสารสัมพันธ์',en:'Stoichiometry'}, chapter:'สสวท. เคมี ม.4', grade:4, q:'ปริมาณสารสัมพันธ์' },
+    solution:    { label:{th:'สารละลาย',en:'Solutions'}, chapter:'สสวท. เคมี ม.5', grade:5, q:'สารละลาย' },
+    gas:         { label:{th:'แก๊สและสมบัติของแก๊ส',en:'Gases'}, chapter:'สสวท. เคมี ม.5', grade:5, q:'แก๊ส' },
+    thermo:      { label:{th:'เทอร์โมเคมี',en:'Thermochemistry'}, chapter:'สสวท. เคมี ม.5', grade:5, q:'เทอร์โมเคมี' },
+    equilibrium: { label:{th:'อัตราปฏิกิริยาและสมดุล',en:'Rates and equilibrium'}, chapter:'สสวท. เคมี ม.5', grade:5, q:'อัตราการเกิดปฏิกิริยา สมดุลเคมี' },
+    acid:        { label:{th:'กรด–เบส',en:'Acids and bases'}, chapter:'สสวท. เคมี ม.5', grade:5, q:'กรด เบส pH' },
+    electro:     { label:{th:'ไฟฟ้าเคมี',en:'Electrochemistry'}, chapter:'สสวท. เคมี ม.6', grade:6, q:'ไฟฟ้าเคมี' },
+    organic:     { label:{th:'เคมีอินทรีย์',en:'Organic chemistry'}, chapter:'สสวท. เคมี ม.6', grade:6, q:'เคมีอินทรีย์' },
+    general:     { label:{th:'พื้นฐานเคมี',en:'Chemistry basics'}, chapter:'สสวท. เคมี ม.4', grade:4, q:'เคมีพื้นฐาน' }
   },
   biology: {
-    genetics:   { label:{th:'พันธุศาสตร์',en:'Genetics'}, chapter:'สสวท. ชีววิทยา ม.5 · พันธุศาสตร์', url:SRC_SCI },
-    evolution:  { label:{th:'วิวัฒนาการ',en:'Evolution'}, chapter:'สสวท. ชีววิทยา ม.6 · วิวัฒนาการ', url:SRC_SCI },
-    microbe:    { label:{th:'จุลชีววิทยาและภูมิคุ้มกัน',en:'Microbiology and immunity'}, chapter:'สสวท. ชีววิทยา ม.5–6 · จุลชีววิทยาและภูมิคุ้มกัน', url:SRC_SCI },
-    plant:      { label:{th:'โครงสร้างและการทำงานของพืช',en:'Plant structure and function'}, chapter:'สสวท. ชีววิทยา ม.5 · โครงสร้างและการทำงานของพืช', url:SRC_SCI },
-    human:      { label:{th:'ระบบร่างกายมนุษย์',en:'Human body systems'}, chapter:'สสวท. ชีววิทยา ม.4–5 · ระบบร่างกายมนุษย์', url:SRC_SCI },
-    ecology:    { label:{th:'ระบบนิเวศและประชากร',en:'Ecology and populations'}, chapter:'สสวท. ชีววิทยา ม.6 · ระบบนิเวศและประชากร', url:SRC_SCI },
-    cell:       { label:{th:'เซลล์และการลำเลียงสาร',en:'Cells and transport'}, chapter:'สสวท. ชีววิทยา ม.4 · เซลล์และการลำเลียงสาร', url:SRC_SCI },
-    biomolecule:{ label:{th:'สารชีวโมเลกุล',en:'Biomolecules'}, chapter:'สสวท. ชีววิทยา ม.4 · สารชีวโมเลกุล', url:SRC_SCI },
-    general:    { label:{th:'พื้นฐานชีววิทยา',en:'Biology basics'}, chapter:'สสวท. ชีววิทยา ม.4–6 · ความรู้พื้นฐาน', url:SRC_SCI }
+    cell:        { label:{th:'เซลล์และออร์แกเนลล์',en:'Cells and organelles'}, chapter:'สสวท. ชีววิทยา ม.4', grade:4, q:'เซลล์ ออร์แกเนลล์' },
+    transport:   { label:{th:'การลำเลียงสาร',en:'Membrane transport'}, chapter:'สสวท. ชีววิทยา ม.4', grade:4, q:'การลำเลียงสาร ออสโมซิส' },
+    biomolecule: { label:{th:'สารชีวโมเลกุล',en:'Biomolecules'}, chapter:'สสวท. ชีววิทยา ม.4', grade:4, q:'สารชีวโมเลกุล' },
+    genetics:    { label:{th:'พันธุศาสตร์',en:'Genetics'}, chapter:'สสวท. ชีววิทยา ม.5', grade:5, q:'พันธุศาสตร์' },
+    human:       { label:{th:'ระบบร่างกายมนุษย์',en:'Human body systems'}, chapter:'สสวท. ชีววิทยา ม.5', grade:5, q:'ระบบร่างกายมนุษย์' },
+    plant:       { label:{th:'โครงสร้างและการทำงานของพืช',en:'Plant structure and function'}, chapter:'สสวท. ชีววิทยา ม.5', grade:5, q:'โครงสร้างพืช' },
+    microbe:     { label:{th:'จุลชีววิทยาและภูมิคุ้มกัน',en:'Microbiology and immunity'}, chapter:'สสวท. ชีววิทยา ม.5', grade:5, q:'จุลชีววิทยา ภูมิคุ้มกัน' },
+    ecology:     { label:{th:'ระบบนิเวศและประชากร',en:'Ecology and populations'}, chapter:'สสวท. ชีววิทยา ม.6', grade:6, q:'ระบบนิเวศ' },
+    evolution:   { label:{th:'วิวัฒนาการ',en:'Evolution'}, chapter:'สสวท. ชีววิทยา ม.6', grade:6, q:'วิวัฒนาการ' },
+    general:     { label:{th:'พื้นฐานชีววิทยา',en:'Biology basics'}, chapter:'สสวท. ชีววิทยา ม.4', grade:4, q:'ชีววิทยาพื้นฐาน' }
   },
   math: {
-    algebra:    { label:{th:'พีชคณิตและสมการ',en:'Algebra and equations'}, chapter:'สสวท. คณิตศาสตร์ ม.4 · พีชคณิตและสมการ', url:SRC_SCI },
-    geometry:   { label:{th:'เรขาคณิตและพื้นที่',en:'Geometry and area'}, chapter:'สสวท. คณิตศาสตร์ ม.4–5 · เรขาคณิตและพื้นที่', url:SRC_SCI },
-    stats:      { label:{th:'สถิติ',en:'Statistics'}, chapter:'สสวท. คณิตศาสตร์ ม.6 · สถิติ', url:SRC_SCI },
-    probability:{ label:{th:'ความน่าจะเป็น',en:'Probability'}, chapter:'สสวท. คณิตศาสตร์ ม.6 · ความน่าจะเป็น', url:SRC_SCI },
-    sequence:   { label:{th:'ลำดับและอนุกรม',en:'Sequences and series'}, chapter:'สสวท. คณิตศาสตร์ ม.5 · ลำดับและอนุกรม', url:SRC_SCI },
-    number:     { label:{th:'จำนวนจริงและอัตราส่วน',en:'Numbers and ratio'}, chapter:'สสวท. คณิตศาสตร์ ม.4 · จำนวนจริงและอัตราส่วน', url:SRC_SCI },
-    general:    { label:{th:'พื้นฐานคณิตศาสตร์',en:'Math basics'}, chapter:'สสวท. คณิตศาสตร์ ม.4–6 · ความรู้พื้นฐาน', url:SRC_SCI }
+    number:      { label:{th:'จำนวนจริงและอัตราส่วน',en:'Numbers and ratio'}, chapter:'สสวท. คณิตศาสตร์ ม.4', grade:4, q:'จำนวนจริง อัตราส่วน ร้อยละ' },
+    algebra:     { label:{th:'พีชคณิตและสมการ',en:'Algebra and equations'}, chapter:'สสวท. คณิตศาสตร์ ม.4', grade:4, q:'พีชคณิต สมการ' },
+    geometry:    { label:{th:'เรขาคณิตและพื้นที่',en:'Geometry and area'}, chapter:'สสวท. คณิตศาสตร์ ม.4', grade:4, q:'เรขาคณิต พื้นที่ ปริมาตร' },
+    sequence:    { label:{th:'ลำดับและอนุกรม',en:'Sequences and series'}, chapter:'สสวท. คณิตศาสตร์ ม.5', grade:5, q:'ลำดับและอนุกรม' },
+    stats:       { label:{th:'สถิติ',en:'Statistics'}, chapter:'สสวท. คณิตศาสตร์ ม.6', grade:6, q:'สถิติ' },
+    probability: { label:{th:'ความน่าจะเป็น',en:'Probability'}, chapter:'สสวท. คณิตศาสตร์ ม.6', grade:6, q:'ความน่าจะเป็น' },
+    general:     { label:{th:'พื้นฐานคณิตศาสตร์',en:'Math basics'}, chapter:'สสวท. คณิตศาสตร์ ม.4', grade:4, q:'คณิตศาสตร์พื้นฐาน' }
   },
   thai: {
-    literature: { label:{th:'วรรณคดีและวรรณกรรม',en:'Literature'}, chapter:'วรรณคดีไทย ม.4–6 · วรรณคดีและวรรณกรรม', url:SRC_SOC },
-    prosody:    { label:{th:'ฉันทลักษณ์',en:'Thai prosody'}, chapter:'ภาษาไทย ม.4–6 · ฉันทลักษณ์', url:SRC_SOC },
-    rajasap:    { label:{th:'คำราชาศัพท์และระดับภาษา',en:'Royal and formal language'}, chapter:'หลักภาษาไทย ม.4–6 · คำราชาศัพท์และระดับภาษา', url:SRC_SOC },
-    rhetoric:   { label:{th:'โวหารและสำนวน',en:'Rhetoric and idioms'}, chapter:'ภาษาไทย ม.4–6 · โวหารและสำนวน', url:SRC_SOC },
-    reading:    { label:{th:'การอ่านจับใจความและวิเคราะห์',en:'Reading and analysis'}, chapter:'การอ่าน ม.4–6 · จับใจความ วิเคราะห์ และตีความ', url:SRC_SOC },
-    writing:    { label:{th:'การเขียน',en:'Writing'}, chapter:'การเขียน ม.4–6 · เรียงความ ย่อความ และจดหมาย', url:SRC_SOC },
-    grammar:    { label:{th:'หลักภาษาไทย',en:'Thai grammar'}, chapter:'หลักภาษาไทย ม.4–6 · ชนิดของคำและประโยค', url:SRC_SOC },
-    general:    { label:{th:'พื้นฐานภาษาไทย',en:'Thai basics'}, chapter:'ภาษาไทย ม.4–6 · ความรู้พื้นฐาน', url:SRC_SOC }
+    grammar:    { label:{th:'หลักภาษาไทย',en:'Thai grammar'}, chapter:'ภาษาไทย ม.4–6', grade:0, q:'หลักภาษาไทย ชนิดของคำ' },
+    rajasap:    { label:{th:'คำราชาศัพท์',en:'Royal language'}, chapter:'ภาษาไทย ม.4–6', grade:0, q:'คำราชาศัพท์' },
+    literature: { label:{th:'วรรณคดีและวรรณกรรม',en:'Literature'}, chapter:'ภาษาไทย ม.4–6', grade:0, q:'วรรณคดีไทย' },
+    prosody:    { label:{th:'ฉันทลักษณ์',en:'Thai prosody'}, chapter:'ภาษาไทย ม.4–6', grade:0, q:'ฉันทลักษณ์ไทย' },
+    rhetoric:   { label:{th:'โวหารและสำนวน',en:'Rhetoric and idioms'}, chapter:'ภาษาไทย ม.4–6', grade:0, q:'โวหาร สำนวนไทย' },
+    reading:    { label:{th:'การอ่านจับใจความ',en:'Reading and analysis'}, chapter:'ภาษาไทย ม.4–6', grade:0, q:'การอ่านจับใจความ' },
+    writing:    { label:{th:'การเขียน',en:'Writing'}, chapter:'ภาษาไทย ม.4–6', grade:0, q:'การเขียนเรียงความ' },
+    general:    { label:{th:'พื้นฐานภาษาไทย',en:'Thai basics'}, chapter:'ภาษาไทย ม.4–6', grade:0, q:'ภาษาไทย' }
   },
   social: {
-    history:   { label:{th:'ประวัติศาสตร์',en:'History'}, chapter:'สังคมศึกษา ม.4–6 · ประวัติศาสตร์ไทยและโลก', url:SRC_SOC },
-    geography: { label:{th:'ภูมิศาสตร์',en:'Geography'}, chapter:'สังคมศึกษา ม.4–6 · ภูมิศาสตร์', url:SRC_SOC },
-    religion:  { label:{th:'ศาสนาและวัฒนธรรม',en:'Religion and culture'}, chapter:'สังคมศึกษา ม.4–6 · ศาสนาและวัฒนธรรม', url:SRC_SOC },
-    economics: { label:{th:'เศรษฐศาสตร์',en:'Economics'}, chapter:'สังคมศึกษา ม.4–6 · เศรษฐศาสตร์', url:SRC_SOC },
-    civics:    { label:{th:'หน้าที่พลเมือง',en:'Civics'}, chapter:'สังคมศึกษา ม.4–6 · หน้าที่พลเมืองและรัฐธรรมนูญ', url:SRC_SOC },
-    general:   { label:{th:'พื้นฐานสังคมศึกษา',en:'Social studies basics'}, chapter:'สังคมศึกษา ม.4–6 · ความรู้พื้นฐาน', url:SRC_SOC }
+    civics:    { label:{th:'หน้าที่พลเมือง',en:'Civics'}, chapter:'สังคมศึกษา ม.4–6', grade:0, q:'หน้าที่พลเมือง รัฐธรรมนูญ' },
+    economics: { label:{th:'เศรษฐศาสตร์',en:'Economics'}, chapter:'สังคมศึกษา ม.4–6', grade:0, q:'เศรษฐศาสตร์' },
+    history:   { label:{th:'ประวัติศาสตร์',en:'History'}, chapter:'สังคมศึกษา ม.4–6', grade:0, q:'ประวัติศาสตร์ไทย' },
+    geography: { label:{th:'ภูมิศาสตร์',en:'Geography'}, chapter:'สังคมศึกษา ม.4–6', grade:0, q:'ภูมิศาสตร์' },
+    religion:  { label:{th:'ศาสนาและวัฒนธรรม',en:'Religion and culture'}, chapter:'สังคมศึกษา ม.4–6', grade:0, q:'ศาสนาและวัฒนธรรม' },
+    general:   { label:{th:'พื้นฐานสังคมศึกษา',en:'Social studies basics'}, chapter:'สังคมศึกษา ม.4–6', grade:0, q:'สังคมศึกษา' }
   },
   english: {
-    vocab:   { label:{th:'คำศัพท์และสำนวน',en:'Vocabulary and idioms'}, chapter:'ภาษาอังกฤษ ม.4–6 · คำศัพท์และสำนวน', url:SRC_ENG },
-    reading: { label:{th:'การอ่าน',en:'Reading'}, chapter:'ภาษาอังกฤษ ม.4–6 · การอ่าน', url:SRC_ENG },
-    grammar: { label:{th:'ไวยากรณ์',en:'Grammar'}, chapter:'ภาษาอังกฤษ ม.4–6 · ไวยากรณ์', url:SRC_ENG },
-    writing: { label:{th:'การเขียนและ collocation',en:'Writing and collocation'}, chapter:'ภาษาอังกฤษ ม.4–6 · การเขียนและ collocation', url:SRC_ENG },
-    general: { label:{th:'พื้นฐานภาษาอังกฤษ',en:'English basics'}, chapter:'ภาษาอังกฤษ ม.4–6 · ความรู้พื้นฐาน', url:SRC_ENG }
+    grammar: { label:{th:'ไวยากรณ์',en:'Grammar'}, chapter:'ภาษาอังกฤษ ม.4–6', grade:0, q:'English grammar' },
+    vocab:   { label:{th:'คำศัพท์และสำนวน',en:'Vocabulary and idioms'}, chapter:'ภาษาอังกฤษ ม.4–6', grade:0, q:'English vocabulary' },
+    reading: { label:{th:'การอ่าน',en:'Reading'}, chapter:'ภาษาอังกฤษ ม.4–6', grade:0, q:'English reading comprehension' },
+    writing: { label:{th:'การเขียนและ collocation',en:'Writing and collocation'}, chapter:'ภาษาอังกฤษ ม.4–6', grade:0, q:'English writing' },
+    general: { label:{th:'พื้นฐานภาษาอังกฤษ',en:'English basics'}, chapter:'ภาษาอังกฤษ ม.4–6', grade:0, q:'English' }
   }
 };
 
@@ -1183,19 +1216,25 @@ const TOPIC_RULES = {
     ['modern', ['นิวเคลียร์','กัมมันตรังสี','ครึ่งชีวิต','ฟิชชัน','ควอนตัม']],
     ['fluids', ['ความดัน','ลอยตัว','ของไหล','แบร์นูลี','อาร์คีมีดีส','ความลึก']],
     ['heat', ['ความร้อน','อุณหภูมิ','ความจุความร้อน','ความร้อนแฝง','แก๊ส']],
-    ['waves', ['คลื่น','เสียง','แสง','เลนส์','กระจก','หักเห','สะท้อน','ความถี่','โฟกัส']],
-    ['elec', ['ไฟฟ้า','กระแส','ความต้านทาน','วงจร','แม่เหล็ก','หม้อแปลง','ประจุ','โวลต์','โอห์ม']],
-    ['mech', ['ความเร็ว','ความเร่ง','การกระจัด','ระยะทาง','นิวตัน','แรง','มวล','เสียดทาน','งาน','กำลัง','พลังงาน','สปริง','สมดุล','ตก','สูง','g =','เวกเตอร์','สเกลาร์','ปริมาณ']]
+    ['sound', ['เสียง']],
+    ['light', ['แสง','เลนส์','กระจก','หักเห','สะท้อน','โฟกัส']],
+    ['waves', ['คลื่น']],
+    ['electricity', ['ไฟฟ้า','กระแส','ความต้านทาน','วงจร','ประจุ','โวลต์','โอห์ม']],
+    ['magnetism', ['แม่เหล็ก','หม้อแปลง','เหนี่ยวนำ']],
+    ['energy', ['งาน','กำลัง','พลังงาน','สปริง','ศักย์','จลน์']],
+    ['dynamics', ['แรง','มวล','นิวตัน','เสียดทาน','สมดุล']],
+    ['kinematics', ['ความเร็ว','ความเร่ง','การกระจัด','ระยะทาง','ตก','สูง','g =','เวกเตอร์','สเกลาร์']]
   ],
   chemistry: [
     ['acid', ['pH','กรด','เบส','สะเทิน','บัฟเฟอร์','ไทเทรต','อินดิเคเตอร์']],
     ['electro', ['ออกซิเดชัน','รีดักชัน','แคโทด','แอโนด','เซลล์','อิเล็กโทร','สนิม']],
     ['organic', ['อัลเคน','อัลคีน','แอลกอฮอล์','คาร์บอกซิลิก','พอลิเมอร์','อินทรีย์','เอทิลีน']],
     ['gas', ['แก๊ส','บอยล์','ชาร์ล','ดอลตัน','STP']],
-    ['equilibrium', ['สมดุล','อัตราการเกิด','อัตราเร็ว','ตัวเร่ง','เลอชาเตอลิเยร์']],
     ['thermo', ['คายความร้อน','ดูดความร้อน','ΔH','เทอร์โม','พลังงานกระตุ้น']],
+    ['equilibrium', ['สมดุล','อัตราการเกิด','อัตราเร็ว','ตัวเร่ง','เลอชาเตอลิเยร์']],
     ['bonding', ['พันธะ','โคเวเลนต์','ไอออนิก','VSEPR','รูปร่าง','ไฮโดรเจน']],
-    ['atomic', ['อะตอม','โปรตอน','นิวตรอน','อิเล็กตรอน','ไอโซโทป','ตารางธาตุ','หมู่','คาบ','เลขอะตอม','อิเล็กโทรเนกาติวิตี','นิวเคลียส','รัทเทอร์ฟอร์ด']],
+    ['periodic', ['ตารางธาตุ','หมู่','คาบ','ขนาดอะตอม','อิเล็กโทรเนกาติวิตี','ไอออไนเซชัน']],
+    ['atomic', ['อะตอม','โปรตอน','นิวตรอน','อิเล็กตรอน','ไอโซโทป','เลขอะตอม','รัทเทอร์ฟอร์ด','นิวเคลียส']],
     ['mole', ['โมล','มวลโมลาร์','อะโวกาโดร','สารสัมพันธ์','ผลได้','เอมพิริคัล','สมการ']],
     ['solution', ['สารละลาย','ความเข้มข้น','ละลาย','อิ่มตัว']]
   ],
@@ -1206,7 +1245,8 @@ const TOPIC_RULES = {
     ['plant', ['พืช','ปากใบ','คลอโรฟิลล์','ลำเลียง','ราก','ลำต้น','สังเคราะห์ด้วยแสง']],
     ['human', ['หัวใจ','เลือด','ลำไส้','ตับอ่อน','ประสาท','ฮอร์โมน','ไต','ปอด']],
     ['ecology', ['ระบบนิเวศ','ห่วงโซ่','ประชากร','วัฏจักร','ไบโอม']],
-    ['cell', ['เซลล์','นิวเคลียส','ไมโทคอนเดรีย','คลอโรพลาสต์','ไรโบโซม','เยื่อ','ออสโมซิส','แพร่']],
+    ['transport', ['ออสโมซิส','แพร่','พลาสโมไลซิส','active transport','ลำเลียง']],
+    ['cell', ['เซลล์','นิวเคลียส','ไมโทคอนเดรีย','คลอโรพลาสต์','ไรโบโซม','กอลจิ','ไลโซโซม','แวคิวโอล','เยื่อหุ้ม']],
     ['biomolecule', ['เอนไซม์','โปรตีน','คาร์โบไฮเดรต','ไขมัน','DNA','RNA','ATP']]
   ],
   math: [
@@ -1252,13 +1292,29 @@ function topicFor(q){
   }
   return 'general';
 }
+
+function searchUrl(subject, query){
+  const base = (subject === 'english') ? SEARCH_BASE.english
+    : (subject === 'thai' || subject === 'social') ? SEARCH_BASE.social
+    : SEARCH_BASE.science;
+  return base + encodeURIComponent(query || '');
+}
+
 function refFor(q){
   const subject = TOPICS[q.s] || {};
   const key = topicFor(q);
-  return subject[key] || subject.general || { label:{th:'ทบทวนบทเรียน',en:'Review'}, chapter:'', url:'https://www.ipst.ac.th/' };
+  const t = subject[key] || subject.general || { label:{th:'ทบทวนบทเรียน',en:'Review'}, chapter:'', grade:0, q:'' };
+  return {
+    label: t.label,
+    chapter: t.chapter,
+    grade: t.grade || 0,
+    query: t.q,
+    url: searchUrl(q.s, t.q)
+  };
 }
 
-/* d = difficulty 1..3 | a = index of correct option */
+function gradeOf(q){ return refFor(q).grade; }
+
 const BANK = [
 {"id":"ph1","s":"physics","d":1,"q":"รถคันหนึ่งเริ่มเคลื่อนที่จากหยุดนิ่งด้วยความเร่งคงที่ 2 m/s² เป็นเวลา 5 วินาที ความเร็วปลายทางเป็นเท่าใด","o":["5 m/s","10 m/s","15 m/s","20 m/s"],"a":1,"w":"v = u + at = 0 + (2)(5) = 10 m/s"},
 {"id":"ph2","s":"physics","d":1,"q":"ปล่อยวัตถุจากที่สูงให้ตกแบบอิสระ (g = 10 m/s²) เป็นเวลา 2 วินาที วัตถุตกลงมาเป็นระยะทางเท่าใด","o":["10 m","20 m","40 m","5 m"],"a":1,"w":"s = ½gt² = ½(10)(4) = 20 m"},
@@ -1985,7 +2041,7 @@ const el = {
   review:$('#review'), againBtn:$('#againBtn'), weakBtn:$('#weakBtn'), menuBtn:$('#menuBtn'),
   statsTop:$('#statsTop'), statsBody:$('#statsBody'),
   ov:$('#ov'), ovPick:$('#ovPick'), ovTitle:$('#ovTitle'), ovSub:$('#ovSub'), ovStats:$('#ovStats'),
-  tiers:$('#tiers'), ovBtn:$('#ovBtn'), ovCancel:$('#ovCancel'),
+  tiers:$('#tiers'), grades:$('#grades'), ovBtn:$('#ovBtn'), ovCancel:$('#ovCancel'),
   banner:$('#banner'), comboPop:$('#comboPop'), flash:$('#flash'),
   fx:$('#fxLayer'), cvs:$('#cf'), live:$('#live')
 };
@@ -2081,6 +2137,7 @@ function say(msg){
    6. game state
    ========================================================= */
 let TIER = 'mix';
+let GRADE = 0;
 let CURRENT_KEY = null;
 
 const S = {
@@ -2200,6 +2257,7 @@ function intro(key){
   el.ovCancel.hidden = false;
   paintDossier();
   paintTiers();
+  paintGrades();
   el.ov.classList.add('on');
   el.ovBtn.focus();
   el.ovBtn.onclick = function(){
@@ -2234,29 +2292,42 @@ function paintTiers(){
     b.classList.toggle('on', b.dataset.tier === TIER);
   });
 }
+function paintGrades(){
+  $$('#grades button').forEach(function(b){
+    b.classList.toggle('on', Number(b.dataset.grade) === GRADE);
+  });
+}
 
 /* =========================================================
    9. battle start
    ========================================================= */
-function buildSet(key, n, tier){
+function buildSet(key, n, tier, grade){
   let pool = (key === 'rush') ? BANK.slice() : BANK.filter(function(q){ return q.s === key; });
   if (tier === 'core' || tier === 'hard') {
     const allow = (tier === 'core') ? [1, 2] : [2, 3];
     const filtered = pool.filter(function(q){ return allow.indexOf(q.d) !== -1; });
     if (filtered.length >= n) pool = filtered;
   }
+  if (grade) {
+    const gFiltered = pool.filter(function(q){
+      const g = gradeOf(q);
+      return g === 0 || g === grade;
+    });
+    if (gFiltered.length >= 8) pool = gFiltered;
+  }
+  const take = Math.min(n, pool.length);
   pool = shuffle(pool.slice());
   const byD = {1:[], 2:[], 3:[]};
   pool.forEach(function(q){ byD[q.d].push(q); });
-  const w1 = Math.round(n * 0.35);
-  const w2 = Math.round(n * 0.4);
-  const w3 = Math.max(0, n - w1 - w2);
+  const w1 = Math.round(take * 0.35);
+  const w2 = Math.round(take * 0.4);
+  const w3 = Math.max(0, take - w1 - w2);
   let out = byD[1].slice(0, w1).concat(byD[2].slice(0, w2), byD[3].slice(0, w3));
-  if (out.length < n) {
+  if (out.length < take) {
     const used = {};
     out.forEach(function(q){ used[q.id] = 1; });
     const rest = shuffle(pool.filter(function(q){ return !used[q.id]; }));
-    out = out.concat(rest.slice(0, n - out.length));
+    out = out.concat(rest.slice(0, take - out.length));
   }
   return out.sort(function(a, b){ return a.d - b.d; });
 }
@@ -2272,9 +2343,10 @@ function startBattle(key, opts){
   S.key = key;
   S.rush = (key === 'rush');
   S.sub = S.rush ? RUSH : SUB[key];
-  S.questions = opts.qs ? opts.qs.slice() : buildSet(key, S.rush ? 20 : 14, TIER);
+  S.questions = opts.qs ? opts.qs.slice() : buildSet(key, S.rush ? 20 : 14, TIER, GRADE);
   S.qi = 0;
-  S.maxHp = opts.bossMax || (S.rush ? 1600 : 1300);
+  const baseQ = S.rush ? 20 : 14;
+  S.maxHp = opts.bossMax || Math.round((S.rush ? 1600 : 1300) * (S.questions.length / baseQ));
   S.hp = S.maxHp;
   S.plMax = 5; S.plHp = 5;
   S.uses = { shield:2, freeze:2, half:3 };
@@ -2423,7 +2495,8 @@ function paintNextLabel(){
 function paintRef(q){
   if (!q) return;
   const r = refFor(q);
-  el.refTxt.textContent = (LANG === 'en') ? (r.chapter + ' · ' + r.label.en) : r.chapter;
+  const label = (LANG === 'en') ? r.label.en : r.label.th;
+  el.refTxt.textContent = label + ' · ' + r.chapter;
   el.refLink.href = r.url;
   el.refLink.textContent = t('refOpen');
 }
@@ -2432,8 +2505,8 @@ function refNode(q){
   const r = refFor(q);
   const d = document.createElement('div');
   d.className = 'rw ref';
-  const label = (LANG === 'en') ? (r.chapter + ' · ' + r.label.en) : r.chapter;
-  d.appendChild(document.createTextNode('📖 ' + label + ' · '));
+  const label = (LANG === 'en') ? r.label.en : r.label.th;
+  d.appendChild(document.createTextNode('📖 ' + label + ' · ' + r.chapter + ' · '));
   const a = document.createElement('a');
   a.href = r.url;
   a.target = '_blank';
@@ -2866,6 +2939,14 @@ $$('#tiers button').forEach(function(b){
   b.addEventListener('click', function(){
     TIER = b.dataset.tier;
     paintTiers();
+    SFX.click();
+  });
+});
+
+$$('#grades button').forEach(function(b){
+  b.addEventListener('click', function(){
+    GRADE = Number(b.dataset.grade);
+    paintGrades();
     SFX.click();
   });
 });

@@ -20,12 +20,15 @@ Answer correctly to damage the boss, chain combos, spend three tactical skills, 
 **Total: 700 questions**, every item with an explanation.
 
 Every question also shows **what to review next**: the topic, the textbook chapter (สสวท strand and
-grade), and a link to an online lesson portal (IPST Project 14, OBEC, or Khan Academy).
+grade), and a link that opens a **topic-specific search** on a lesson portal (IPST Project 14, OBEC,
+or Khan Academy) — not just the site home page.
 
 ## Features
 
 - **5 bosses + Boss Rush** — each subject has its own boss; Rush mixes 20 questions from all seven.
 - **Three difficulty tiers** in the boss dossier: ผสม / พื้นฐาน (ง่าย–กลาง) / เข้มข้น (กลาง–ยาก).
+- **Grade filter** in the dossier: ทั้งหมด / ม.4 / ม.5 / ม.6 — applied when the subject has at least
+  8 questions in that grade; otherwise the battle uses the full pool.
 - **Three skills** with charges + cooldowns: 🛡️ Shield, ⏱️ Time Freeze, 💡 50/50.
 - **Rage phase** below 50% boss HP: red aura and a shorter clock.
 - Combo/crit damage, screen shake, canvas particles, synthesised Web Audio (no audio files).
