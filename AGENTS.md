@@ -46,7 +46,7 @@ Control points:
 | Location | Controls |
 |---|---|
 | `SUB` | 7 subjects: Thai/English name, emoji, accent colour, boss name, description |
-| `BANK` | 420 questions, one per line, keys `id,s,d,q,o,a,w` |
+| `BANK` | 700 questions, one per line, keys `id,s,d,q,o,a,w` |
 | `TIER` | `mix` \\| `core` (d1–2) \\| `hard` (d2–3), applied in `buildSet()` |
 | `S` | Battle state; `startBattle()` resets it |
 | `M.th` / `M.en` + `t()` | UI copy; static nodes use `data-i18n` / `data-i18n-aria` |
@@ -79,8 +79,8 @@ diff. Adding questions: append a line before `];` and run the validator.
 - **Question content is Thai** except the English subject. The English UI does not translate content.
 - **Subjects are school subjects, not exam papers.** Engineering/logic from the TPAT3 repo are
   deliberately excluded here.
-- **The new subjects are seed banks (30 each).** This is intentional for the first release; expand
-  them in batches. Keep 4 options, one correct, a Thai explanation, and no duplicate stems.
+- **The bank is now 700 questions (100 per subject, physics 101 / math 99).** Keep new items within
+  the same schema and add keywords for their topic so the study reference resolves correctly.
 - **Balance:** boss 1300 HP (Rush 1600), damage `70 + 12×combo` capped at combo 6, crit ×1.5 within
   8 s, wrong answer −1 heart and boss +30 HP, 32 s clock → 26 s in rage. Retune together.
 - **Navigation:** bottom tabs are the home affordance; do not reintroduce the old chip row.
@@ -89,8 +89,8 @@ diff. Adding questions: append a line before `];` and run the validator.
 
 ## 5. Known issues
 
-- Chemistry, biology, Thai and social are being expanded to 100 each; chemistry is done, the other
-  three are still at 30. Heavy users will see repeats there.
+- The bank has 700 questions; heavy users will still see repeats eventually. Expansion is the main
+  maintenance task.
 - Topic classification is heuristic (first keyword match). Spot-check new questions; if a reference
   looks wrong, add a more specific keyword or reorder the rule.
 - Grade level (ม.4/5/6) is not tagged, so the difficulty tiers are the only filter.
