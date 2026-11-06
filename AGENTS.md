@@ -51,6 +51,7 @@ Control points:
 | `S` | Battle state; `startBattle()` resets it |
 | `M.th` / `M.en` + `t()` | UI copy; static nodes use `data-i18n` / `data-i18n-aria` |
 | `renderMenu` / `paintDossier` / `renderStats` / `paintEnd` | Re-rendered on language change |
+| `TOPICS` / `TOPIC_RULES` / `topicFor()` / `refFor()` | Study reference: chapter + source link per question |
 | `setView` / `goHome` / `goStats` / `openSheet` | Navigation |
 
 Question schema:
@@ -67,7 +68,13 @@ diff. Adding questions: append a line before `];` and run the validator.
 
 ## 4. Decisions and constraints
 
-- **Zero external requests** — no fonts, CDN, images or audio files. Must run from `file://`.
+- **Every question carries a study reference.** `TOPIC_RULES` classifies a question by keywords in
+  `q.q + q.w` **only** — never the options, because distractors cause false matches. `TOPICS` maps
+  each subject/topic to a Thai chapter label and a portal URL. If you add a question, add its
+  keywords to the right rule; otherwise it falls back to the subject's `general` reference.
+- **Reference links are portal-level** (Project 14 · สสวท, OBEC, Khan Academy), not deep links to a
+  single lesson. Chapter names follow the standard textbook sequence. Do not invent deep URLs.
+- **Zero external requests** — no fonts, CDN, images or audio files. Links open only when tapped.
 - **Thai is the default UI language**, persisted at `bbTPAT3_v1.lang` (same key as the sibling repo).
 - **Question content is Thai** except the English subject. The English UI does not translate content.
 - **Subjects are school subjects, not exam papers.** Engineering/logic from the TPAT3 repo are
@@ -82,8 +89,10 @@ diff. Adding questions: append a line before `];` and run the validator.
 
 ## 5. Known issues
 
-- Chemistry, biology, Thai and social each have only 30 questions. Heavy users will see repeats in
-  a few runs. Expansion is the main maintenance task.
+- Chemistry, biology, Thai and social are being expanded to 100 each; chemistry is done, the other
+  three are still at 30. Heavy users will see repeats there.
+- Topic classification is heuristic (first keyword match). Spot-check new questions; if a reference
+  looks wrong, add a more specific keyword or reorder the rule.
 - Grade level (ม.4/5/6) is not tagged, so the difficulty tiers are the only filter.
 - Content is written by the assistant against the curriculum map; it has **not been reviewed by a
   teacher**. Treat it as practice material and spot-check before classroom use.
