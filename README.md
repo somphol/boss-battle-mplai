@@ -9,15 +9,15 @@ Answer correctly to damage the boss, chain combos, spend three tactical skills, 
 
 | Subject | Questions | Based on |
 |---|---|---|
-| ฟิสิกส์ | 101 | หลักสูตรแกนกลาง 2551 (ปรับปรุง 2560) · สสวท |
+| ฟิสิกส์ | 125 | หลักสูตรแกนกลาง 2551 (ปรับปรุง 2560) · สสวท |
 | เคมี | 100 | สาระที่ 2 วิทยาศาสตร์กายภาพ · สสวท |
-| ชีววิทยา | 100 | สาระที่ 1 วิทยาศาสตร์ชีวภาพ · สสวท |
-| คณิตศาสตร์ | 99 | กลุ่มสาระคณิตศาสตร์ · สสวท |
+| ชีววิทยา | 112 | สาระที่ 1 วิทยาศาสตร์ชีวภาพ · สสวท |
+| คณิตศาสตร์ | 117 | กลุ่มสาระคณิตศาสตร์ · สสวท |
 | ภาษาไทย | 100 | กลุ่มสาระภาษาไทย |
 | สังคมศึกษา | 100 | หน้าที่พลเมือง เศรษฐศาสตร์ ประวัติศาสตร์ ภูมิศาสตร์ |
 | ภาษาอังกฤษ | 100 | กลุ่มสาระภาษาต่างประเทศ |
 
-**Total: 700 questions**, every item with an explanation.
+**Total: 754 questions**, every item with an explanation.
 
 Every question also shows **what to review next**: the topic, the textbook chapter (สสวท strand and
 grade), and a link that opens a **topic-specific search** on a lesson portal (IPST Project 14, OBEC,

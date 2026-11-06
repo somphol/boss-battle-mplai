@@ -46,7 +46,7 @@ Control points:
 | Location | Controls |
 |---|---|
 | `SUB` | 7 subjects: Thai/English name, emoji, accent colour, boss name, description |
-| `BANK` | 700 questions, one per line, keys `id,s,d,q,o,a,w` |
+| `BANK` | 754 questions, one per line, keys `id,s,d,q,o,a,w` |
 | `TIER` | `mix` \\| `core` (d1–2) \\| `hard` (d2–3), applied in `buildSet()` |
 | `S` | Battle state; `startBattle()` resets it |
 | `M.th` / `M.en` + `t()` | UI copy; static nodes use `data-i18n` / `data-i18n-aria` |
@@ -83,8 +83,8 @@ diff. Adding questions: append a line before `];` and run the validator.
 - **Question content is Thai** except the English subject. The English UI does not translate content.
 - **Subjects are school subjects, not exam papers.** Engineering/logic from the TPAT3 repo are
   deliberately excluded here.
-- **The bank is now 700 questions (100 per subject, physics 101 / math 99).** Keep new items within
-  the same schema and add keywords for their topic so the study reference resolves correctly.
+- **The bank is now 754 questions** (physics 125, math 117, biology 112, others 100). Keep new items
+  within the same schema and add keywords for their topic so the study reference resolves correctly.
 - **Balance:** boss 1300 HP (Rush 1600), damage `70 + 12×combo` capped at combo 6, crit ×1.5 within
   8 s, wrong answer −1 heart and boss +30 HP, 32 s clock → 26 s in rage. Retune together.
 - **Navigation:** bottom tabs are the home affordance; do not reintroduce the old chip row.
@@ -93,8 +93,9 @@ diff. Adding questions: append a line before `];` and run the validator.
 
 ## 5. Known issues
 
-- The bank has 700 questions; heavy users will still see repeats eventually. Expansion is the main
-  maintenance task.
+- The bank has 754 questions; heavy users will still see repeats eventually. Expansion is the main
+  maintenance task. Grade coverage is now ≥14 questions for every subject/grade that has a filter
+  (physics M.6 = 24, math M.5 = 14, biology M.6 = 14).
 - Topic classification is heuristic (first keyword match). Spot-check new questions; if a reference
   looks wrong, add a more specific keyword or reorder the rule.
 - Grade level (ม.4/5/6) is not tagged, so the difficulty tiers are the only filter.
